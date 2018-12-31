@@ -55,6 +55,7 @@ public class Blackjack {
         System.out.println("--------------------------------------");
         int answer = scanner.nextInt();
         if(answer == 2) {
+            System.out.println("Good Bye!!!");
             return false;
         }
         return true;
@@ -127,36 +128,58 @@ public class Blackjack {
 //-------------------------------------------------------------------------------
     /**
         Calculates the score of the User's hand
-        @param numCards the number of cards
         @param hand the User's hand 
         @return the score of the User's hand
     */
-    public static int handScore(int numCards, String hand[]) {
+    public static int handScore(String hand[]) {
 		int sum=0;
-		for(int i=0; i<numCards; i++) {
-			//int curentCardScore=cardScore(hand[i]);
-			//sum=sum+currentCardScore;
+		for(int i=0; i < hand.length; i++) {
+			if(hand[i] != null){
+                sum = sum + cardScore(hand[i]);
+            }else{
+			    return sum;
+            }
 		
-			sum = sum + cardScore(hand[i]);
+
 			
 			
 		}
 		//find a way to circle through each hand
 		return sum;
 	}
+
+    /**
+     * Calculates the score of the Dealer's hand
+     * @param hand the dealers hand
+     * @return the score of the dealer's hand
+     */
+    public static int dealerScore(String[] hand){
+        int sum = 0;
+        for(int i = 0; i < hand.length; i++){
+            if(hand[i] != null){
+                sum = sum + cardScore(hand[i]);
+            }else{
+                return sum;
+            }
+
+        }
+
+        return sum;
+    }
+
 //-------------------------------------------------------------------------------
     /**
         Checks if the user has won the game
         @return if the User has won the game
     */
     public static boolean Win() {
-        if(handScore(numCards, UserHand) > 21) {
+        if(handScore(UserHand) > 21) {
             return false;
         }
-        if(handScore(numCards, UserHand) == 21 ) {
+        if(handScore(UserHand) == 21 ) {
             return true;
         }
-        if(handScore(numCards, DealerHand) > 21 && handScore(numCards, UserHand) < 21) {
+        if(dealerScore(DealerHand) > 21 && handScore(UserHand) < 21) {
         return true;
         }
         return false;
@@ -167,16 +190,16 @@ public class Blackjack {
         @return if the game is over or not
     */
     public static boolean gameOver() {
-        if(handScore(numCards, UserHand) > 21) {
+        if(handScore(UserHand) > 21) {
             return true;
         }
-        if(handScore(numCards, DealerHand) > 21) {
+        if(dealerScore(DealerHand) > 21) {
             return true;
         }
-        if(handScore(numCards, UserHand) == 21) {
+        if(handScore(UserHand) == 21) {
             return true;
         }
-        if(handScore(numCards, DealerHand) == 21) {
+        if(handScore(DealerHand) == 21) {
             return true;
         }
         return false;
@@ -192,20 +215,23 @@ public class Blackjack {
             UserHand[numUserCards] = randomCard(deck);
             numUserCards++;
         }
-        if(handScore(numCards, DealerHand) < 17) {
+        if(dealerScore(DealerHand) < 17) {
             DealerHand[numDealerCards] = randomCard(deck);
             numDealerCards++;
            // }
         }
-        if(handScore(numCards, DealerHand) >= 17) {
+        if(dealerScore(DealerHand) >= 17) {
             System.out.println("The Dealer is staying");
         }
-        if(hit == 0) {
-            gameOver();
-            if(handScore(numCards, DealerHand) < 17) {
-            DealerHand[numDealerCards] = randomCard(deck);
-            numDealerCards++;
+        if(hit == 0){
+            while(dealerScore(DealerHand) < 17) {
+                DealerHand[numDealerCards] = randomCard(deck);
+                numDealerCards++;
+                System.out.println("Still running");
+
+
             }
+            gameOver();
         }
        /* else {
             if(handScore(numCards, DealerHand) < 17) {
@@ -217,11 +243,12 @@ public class Blackjack {
         numCards++;
         printHand(UserHand, numCards);
         System.out.println();
-        System.out.println("Your current score is: " + handScore(numUserCards, UserHand));
-        printHand(DealerHand, numCards);
+        System.out.println("Your current score is: " + handScore(UserHand));
         System.out.println("--------------------------------------");
+        System.out.print("Dealer's ");
+        printHand(DealerHand, numCards);
         System.out.println();
-        System.out.println("The Dealer's score is: " + handScore(numCards, DealerHand));
+        System.out.println("The Dealer's score is: " + dealerScore(DealerHand));
     }
 //-------------------------------------------------------------------------------
     /**
@@ -247,11 +274,11 @@ public class Blackjack {
             incrementCards();
             printHand(UserHand, numCards); // Prints User Hand
             System.out.println();
-            System.out.println("Your current score is: " + handScore(numCards, UserHand));
+            System.out.println("Your current score is: " + handScore(UserHand));
             System.out.println("--------------------------------------");
             printHand(DealerHand, numCards);
             System.out.println();
-            System.out.println("The Dealer's score is: " + handScore(numCards, DealerHand));
+            System.out.println("The Dealer's score is: " + dealerScore(DealerHand));
             System.out.println("--------------------------------------");
             while(gameOver() == false) {
                 hitOrStay();
